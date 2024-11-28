@@ -9,6 +9,9 @@ import Original_model
 import Defense_model
 from Get_test import get_device, get_test_loader
 
+label_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat', 
+               'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
+
 def mifgsm_attack(input,epsilon,data_grad):
   iter=10   # 跌代次數
   decay_factor=1.0 # 先前gradient佔的比重
@@ -124,7 +127,7 @@ def test_attack_original_model(model, device):
         accuracies.append(acc)
         adversarial_examples.append(ex)
 
-    # 畫出不同epsilons下model的accuracy
+    # draw accuracy under different epsilons
     plt.figure(figsize=(5,5))
     plt.plot(epsilons, accuracies, "*-")
     plt.title("MI-FGSM")
@@ -132,7 +135,7 @@ def test_attack_original_model(model, device):
     plt.ylabel("Accuracy")
     plt.show()
 
-    # 畫出各adversarial example
+    # draw adversarial example
     cnt = 0
     plt.figure(figsize=(8,10))
     for i in range(len(epsilons)):
@@ -144,7 +147,7 @@ def test_attack_original_model(model, device):
             if j == 0:
                 plt.ylabel("Eps: {}".format(epsilons[i]), fontsize=14)
             orig,adv,ex = adversarial_examples[i][j]
-            plt.title("{} -> {}".format(orig, adv))
+            plt.title("{} -> {}".format(label_names[orig], label_names[adv]))
             plt.imshow(ex, cmap="gray")
     plt.tight_layout()
     plt.show()
@@ -180,7 +183,7 @@ def test_attack_distillation_model(model, device):
             if j == 0:
                 plt.ylabel("Eps: {}".format(epsilons[i]), fontsize=14)
             orig,adv,ex = adversarial_examples[i][j]
-            plt.title("{} -> {}".format(orig, adv))
+            plt.title("{} -> {}".format(label_names[orig], label_names[adv]))
             plt.imshow(ex, cmap="gray")
     plt.tight_layout()
     plt.show()
@@ -189,9 +192,9 @@ def test_attack_distillation_model(model, device):
 
 if __name__ == '__main__':
     device = get_device()
-    model = Original_model.read_model(device)
-    test_attack_original_model(model, device)
-    #modelF1 = Defense_model.read_model(device)
-    #test_attack_distillation_model(modelF1, device)
+    #model = Original_model.read_model(device)
+    #test_attack_original_model(model, device)
+    modelF1 = Defense_model.read_model(device)
+    test_attack_distillation_model(modelF1, device)
 
    

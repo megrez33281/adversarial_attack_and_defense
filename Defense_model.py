@@ -5,6 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import transforms,datasets
+import Get_test
 
 class NetF(nn.Module):
     def __init__(self):
@@ -85,24 +86,26 @@ def fit(model,device,optimizer,scheduler,criterion,train_loader,val_loader,Temp,
 def train_model(Temp, epochs=10):
     np.random.seed(42)
     torch.manual_seed(42)
-    # 將圖片轉黑白、標準化（平均值=0, 標準差=1）
+    # chang picture into black-white and Normalize the picture（mean = 0, standard deviation = 1）
     transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.0,), (1.0,))])
-    # 下載資料集
-    dataset = datasets.MNIST(root = './data', train=True, transform = transform, download=True)
-    # 將資料集分為訓練集、驗證集兩部分
-    train_set, val_set = torch.utils.data.random_split(dataset, [50000, 10000])
+    # download dataset
+    dataset = Get_test.get_train_set(transform)
 
+    val_set_size = int(len(dataset)/6)
+    train_set_size = len(dataset) - val_set_size
+    # split dataset into training set and validation set
+    train_set, val_set = torch.utils.data.random_split(dataset, [train_set_size, val_set_size])
 
-    #創建loader
+    # create loader
     train_loader = torch.utils.data.DataLoader(train_set,batch_size=1,shuffle=True)
     val_loader = torch.utils.data.DataLoader(val_set,batch_size=1,shuffle=True)
     
-    use_cuda=True   # 優先使用GPU
-    # 選擇使用的設備
+    use_cuda=True   # use GPU first
+    # choose device
     device = torch.device("cuda" if (use_cuda and torch.cuda.is_available()) else "cpu")
 
 
-    # 設置model
+    # set model
     modelF = NetF().to(device)
     optimizerF = optim.Adam(modelF.parameters(),lr=0.0001, betas=(0.9, 0.999))
     schedulerF = optim.lr_scheduler.ReduceLROnPlateau(optimizerF, mode='min', factor=0.1, patience=3)
@@ -113,7 +116,7 @@ def train_model(Temp, epochs=10):
 
     criterion = nn.NLLLoss()
 
-    # 訓練modelF
+    # train modelF
     lossF,val_lossF=fit(modelF,device,optimizerF,schedulerF,criterion,train_loader,val_loader,Temp,epochs)
     fig = plt.figure(figsize=(5,5))
     plt.plot(np.arange(1,epochs+1), lossF, "*-",label="Loss")
@@ -123,13 +126,13 @@ def train_model(Temp, epochs=10):
     plt.legend()
     plt.show()
 
-    # 將訓練集中的label改成由modelF得到的soft label
+    # change dataset's label into soft label from modelF
     for data in train_loader:
         input, label  = data[0].to(device),data[1].to(device)
         softlabel  = F.log_softmax(modelF(input),dim=1)
         data[1] = softlabel
 
-    #訓練modelF1
+    #train modelF1
     lossF1,val_lossF1=fit(modelF1,device,optimizerF1,schedulerF1,criterion,train_loader,val_loader,Temp,epochs)
     fig = plt.figure(figsize=(5,5))
     plt.plot(np.arange(1,epochs+1), lossF1, "*-",label="Loss")
@@ -139,14 +142,14 @@ def train_model(Temp, epochs=10):
     plt.legend()
     plt.show()
 
-    # 儲存model參數
+    # save model's weight
     torch.save(modelF1.state_dict(), "Defense_modelF1_weights.pth")
 
   
 def read_model(device):
-    model = NetF1().to(device)  # 重新定義模型架構
+    model = NetF1().to(device)  # define model architecture
     model.load_state_dict(torch.load("Defense_modelF1_weights.pth", weights_only=True))
-    model.eval()  # 將模型切換到評估模式（非訓練模式）
+    model.eval()  # change model mode to evaluation mode (評估模式)
     return model
 
 if __name__ == '__main__':
