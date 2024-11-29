@@ -30,16 +30,16 @@ Run Defense_model.py
 
 ## MI-FGSM attack
 Run mifgsm_attack.py
-* Original_model.read_model(device)
+* Original_model.read_model(device)  
     read Original Model
 
-* test_attack_original_model(model, device)
+* test_attack_original_model(model, device)  
     attack Original Model
 
-* Defense_model.read_model(device)
+* Defense_model.read_model(device)  
     read Defense Model
 
-* test_attack_distillation_model(model, device)
+* test_attack_distillation_model(model, device)  
     attack Defense Model
 
 
