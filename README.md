@@ -1,11 +1,11 @@
 # Reference
-* code 
+* code  
     https://github.com/as791/Adversarial-Example-Attack-and-Defense
 
-* Momentum Iterative Fast Gradient Sign Method(MI-FGSM)
+* Momentum Iterative Fast Gradient Sign Method(MI-FGSM)  
     https://arxiv.org/abs/1710.06081
 
-* Defensive Distillation 
+* Defensive Distillation  
     https://arxiv.org/abs/1511.04508
 
 
