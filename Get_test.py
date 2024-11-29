@@ -9,13 +9,15 @@ from torchvision import transforms,datasets
 def get_test_set(transform):
     # download test dataset
     #test_set = datasets.MNIST(root = './data', train=False, transform = transform, download=True)
-    test_set = datasets.FashionMNIST(root = './data', train=False, transform = transform, download=True)
+    #test_set = datasets.FashionMNIST(root = './data', train=False, transform = transform, download=True)
+    test_set = datasets.CIFAR10(root = './data', train=False, transform = transform, download=True)
     return test_set
 
 def get_train_set(transform):
     # download train dataset
     #train_set = datasets.MNIST(root = './data', train=True, transform = transform, download=True)
-    train_set = datasets.FashionMNIST(root = './data', train=True, transform = transform, download=True)
+    #train_set = datasets.FashionMNIST(root = './data', train=True, transform = transform, download=True)
+    train_set = datasets.CIFAR10(root = './data', train=True, transform = transform, download=True)
     return train_set
 
 def get_test_loader()->torch.utils.data.DataLoader:
