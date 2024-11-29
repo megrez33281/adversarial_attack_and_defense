@@ -73,8 +73,8 @@ Run mifgsm_attack.py
         output = F.log_softmax(x, dim=1)
         return output
     ```
-    * original model loss
-        ![image](img/fashion mnist/original_model_loss.png)
+    * original model loss  
+        ![image](img/fashion_mnist/original_model_loss.png)
 
 
 * defense (Distillation) model architecture
@@ -127,22 +127,22 @@ Run mifgsm_attack.py
             x = self.fc2(x)
             return x
     ```
-    * defense modelF loss
-        [image](img/fashion mnist/defense_modelF_Loss.png)
+    * defense modelF loss  
+        ![image](img/fashion_mnist/defense_modelF_Loss.png)
 
-    * defense modelF1 (train with soft label) loss
-        [image](img/fashion mnist/defense_modelF1_Loss.png)
+    * defense modelF1 (train with soft label) loss  
+        ![image](img/fashion_mnist/defense_modelF1_Loss.png)
 
 * attack original model result
-    * accuracy each epsilon
-        [image](img/fashion mnist/MI-FGSM_attack_original_model_accuracy.png)
-    * result
-        [image](img/fashion mnist/MI-FGSM_attack_original_model.png)
+    * accuracy each epsilon  
+        ![image](img/fashion_mnist/MI-FGSM_attack_original_model_accuracy.png)
+    * result  
+        ![image](img/fashion_mnist/MI-FGSM_attack_original_model.png)
 
 * attack defense (Distillation) model result
-    * accuracy each epsilon
-        [image](img/fashion mnist/MI-FGSM_attack_defense_model_accuracy.png)
-    * result
-        [image](img/fashion mnist/MI-FGSM_attack_adversarial_model.png)
+    * accuracy each epsilon  
+        ![image](img/fashion_mnist/MI-FGSM_attack_defense_model_accuracy.png)
+    * result  
+        ![image](img/fashion_mnist/MI-FGSM_attack_adversarial_model.png)
 
 
