@@ -30,7 +30,7 @@ Run Defense_model.py
 
 ## MI-FGSM attack
 Run mifgsm_attack.py  
-function illustrate
+function illustrate:
 * Original_model.read_model(device)  
     read Original Model
 
@@ -43,6 +43,9 @@ function illustrate
 * test_attack_distillation_model(model, device)  
     attack Defense Model
 
+## Change dataset
+Change test_set or train_set function get_test_set(transform) and get_train_set(transform) in Get_test.py  
+You may need to change model architecture (model_architecture_XXXX.py) with different dataset use in Original_model.py and Defense_model.py  
 
 # Result
 ## FashionMNIST

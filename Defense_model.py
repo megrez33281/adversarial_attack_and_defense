@@ -6,55 +6,26 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import transforms,datasets
 import Get_test
+import model_architecture_FashionMNIST
+import model_architecture_CIFAR10
 
-class NetF(nn.Module):
-    def __init__(self):
-        super(NetF, self).__init__()
-        self.conv1 = nn.Conv2d(1, 32, 3, 1)
-        self.conv2 = nn.Conv2d(32, 64, 3, 1)
-        self.dropout1 = nn.Dropout(0.25)
-        self.dropout2 = nn.Dropout(0.5)
-        self.fc1 = nn.Linear(9216, 128)
-        self.fc2 = nn.Linear(128, 10)
+'''
+class NetF1(model_architecture_FashionMNIST.NetF1):
+   # change model when use different dataset
+   {}
 
-    def forward(self, x):
-        x = self.conv1(x)
-        x = F.relu(x)
-        x = self.conv2(x)
-        x = F.relu(x)
-        x = F.max_pool2d(x, 2)
-        x = self.dropout1(x)
-        x = torch.flatten(x, 1)
-        x = self.fc1(x)
-        x = F.relu(x)
-        x = self.dropout2(x)
-        x = self.fc2(x)
-        return x
+class NetF(model_architecture_FashionMNIST.NetF1):
+   # change model when use different dataset
+   {}
+'''
+class NetF1(model_architecture_CIFAR10.NetF1):
+   # change model when use different dataset
+   {}
 
-class NetF1(nn.Module):
-    def __init__(self):
-        super(NetF1, self).__init__()
-        self.conv1 = nn.Conv2d(1, 16, 3, 1)
-        self.conv2 = nn.Conv2d(16, 32, 3, 1)
-        self.dropout1 = nn.Dropout(0.25)
-        self.dropout2 = nn.Dropout(0.5)
-        self.fc1 = nn.Linear(4608, 64)
-        self.fc2 = nn.Linear(64, 10)
+class NetF(model_architecture_CIFAR10.NetF):
+   # change model when use different dataset
+   {}
 
-    def forward(self, x):
-        x = self.conv1(x)
-        x = F.relu(x)
-        x = self.conv2(x)
-        x = F.relu(x)
-        x = F.max_pool2d(x, 2)
-        x = self.dropout1(x)
-        x = torch.flatten(x, 1)
-        x = self.fc1(x)
-        x = F.relu(x)
-        x = self.dropout2(x)
-        x = self.fc2(x)
-        return x
-    
 def fit(model,device,optimizer,scheduler,criterion,train_loader,val_loader,Temp,epochs):
   data_loader = {'train':train_loader,'val':val_loader}
   print("Fitting the model...")

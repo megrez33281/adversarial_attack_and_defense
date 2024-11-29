@@ -9,14 +9,12 @@ import Original_model
 import Defense_model
 from Get_test import get_device, get_test_loader
 
-label_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat', 
-               'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
 
 def mifgsm_attack(input,epsilon,data_grad):
   iter=10   # 跌代次數
   decay_factor=1.0 # 先前gradient佔的比重
   pert_out = input  # X*
-  alpha = epsilon/iter # 步幅
+  alpha = epsilon/iter # stride(步幅)
   gradient = 0  # 梯度向量
   for i in range(iter-1):
     gradient = decay_factor*gradient + data_grad/torch.norm(data_grad,p=1)
@@ -32,28 +30,28 @@ def attack_original_model(model, device, test_loader, epsilon):
     correct = 0
     adversarial_examples = []
     for data, target in test_loader:
-        # 遍歷測試集
+
         data, target = data.to(device), target.to(device)
         data.requires_grad = True
-        #將資料投入model
+        # put data into model
         output = model(data)
         init_pred = output.max(1, keepdim=True)[1] 
         if init_pred.item() != target.item():
-            # 原始樣本預測錯誤
-            # 不計入原先就預測錯誤的樣本
+            # original sample predict error
+            # the original sample which predict error won't count
             continue
         loss = F.nll_loss(output, target)
         model.zero_grad()
         loss.backward()   
         data_grad = data.grad.data
-        # 計算加入擾動的X*
+        # compute perturbed sample X*
         perturbed_data = mifgsm_attack(data, epsilon, data_grad)
 
-        # 測試加入擾動的X*
+        # predict X*
         output = model(perturbed_data)
         final_pred = output.max(1, keepdim=True)[1]
         if final_pred.item() == target.item():
-            # 加入擾動後仍預測正確
+            # X* predict correctly
             correct += 1
             if (epsilon == 0) and (len(adversarial_examples) < 5):
                 # 為epsilon = 0 蒐集adversial_example（epsilon = 0等於不加入擾動，其結果等同於原始輸入）
@@ -74,10 +72,9 @@ def attack_distillation_model(model, device, test_loader, epsilon):
     correct = 0
     adversarial_examples = []
     for data, target in test_loader:
-        # 遍歷測試集
         data, target = data.to(device), target.to(device)
         data.requires_grad = True
-        #將資料投入model
+
         output = model(data)
         # 將output輸入激活函數
         output = F.log_softmax(output,dim=1)
@@ -121,12 +118,13 @@ def test_attack_original_model(model, device):
     accuracies = []
     adversarial_examples = []
     
-    test_loader = get_test_loader()
+    test_loader, label_names = get_test_loader()
+    
     for eps in epsilons:
         acc, ex = attack_original_model(model, device, test_loader, eps)
         accuracies.append(acc)
         adversarial_examples.append(ex)
-
+    
     # draw accuracy under different epsilons
     plt.figure(figsize=(5,5))
     plt.plot(epsilons, accuracies, "*-")
@@ -148,7 +146,10 @@ def test_attack_original_model(model, device):
                 plt.ylabel("Eps: {}".format(epsilons[i]), fontsize=14)
             orig,adv,ex = adversarial_examples[i][j]
             plt.title("{} -> {}".format(label_names[orig], label_names[adv]))
-            plt.imshow(ex, cmap="gray")
+            if len(np.shape(ex)) == 3:
+                plt.imshow(np.moveaxis(ex, 0, -1))
+            else:
+                plt.imshow(ex, cmap="gray")
     plt.tight_layout()
     plt.show()
 
@@ -157,7 +158,7 @@ def test_attack_distillation_model(model, device):
     accuracies = []
     adversarial_examples = []
     
-    test_loader = get_test_loader()
+    test_loader, label_names = get_test_loader()
     for eps in epsilons:
         acc, ex = attack_distillation_model(model, device, test_loader, eps)
         accuracies.append(acc)
@@ -184,7 +185,10 @@ def test_attack_distillation_model(model, device):
                 plt.ylabel("Eps: {}".format(epsilons[i]), fontsize=14)
             orig,adv,ex = adversarial_examples[i][j]
             plt.title("{} -> {}".format(label_names[orig], label_names[adv]))
-            plt.imshow(ex, cmap="gray")
+            if len(np.shape(ex)) == 3:
+                plt.imshow(np.moveaxis(ex, 0, -1))
+            else:
+                plt.imshow(ex, cmap="gray")
     plt.tight_layout()
     plt.show()
     
@@ -192,9 +196,9 @@ def test_attack_distillation_model(model, device):
 
 if __name__ == '__main__':
     device = get_device()
-    #model = Original_model.read_model(device)
-    #test_attack_original_model(model, device)
-    modelF1 = Defense_model.read_model(device)
-    test_attack_distillation_model(modelF1, device)
+    model = Original_model.read_model(device)
+    test_attack_original_model(model, device)
+    #modelF1 = Defense_model.read_model(device)
+    #test_attack_distillation_model(modelF1, device)
 
    
