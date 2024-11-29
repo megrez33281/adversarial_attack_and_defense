@@ -29,7 +29,7 @@ Run Original_model.py
 Run Defense_model.py
 
 ## MI-FGSM attack
-Run mifgsm_attack.py
+Run mifgsm_attack.py  
 function illustrate
 * Original_model.read_model(device)  
     read Original Model
