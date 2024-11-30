@@ -52,30 +52,30 @@ You may need to change model architecture (model_architecture_XXXX.py) with diff
 * original model architecture
     ```
     class Net(nn.Module):
-    # neural network model
-    def __init__(self):
-        super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(1, 32, 3, 1)
-        self.conv2 = nn.Conv2d(32, 64, 3, 1)
-        self.dropout1 = nn.Dropout(0.25)
-        self.dropout2 = nn.Dropout(0.5)
-        self.fc1 = nn.Linear(9216, 128)
-        self.fc2 = nn.Linear(128, 10)
+        # neural network model
+        def __init__(self):
+            super(Net, self).__init__()
+            self.conv1 = nn.Conv2d(1, 32, 3, 1)
+            self.conv2 = nn.Conv2d(32, 64, 3, 1)
+            self.dropout1 = nn.Dropout(0.25)
+            self.dropout2 = nn.Dropout(0.5)
+            self.fc1 = nn.Linear(9216, 128)
+            self.fc2 = nn.Linear(128, 10)
 
-    def forward(self, x):
-        x = self.conv1(x)
-        x = F.relu(x)
-        x = self.conv2(x)
-        x = F.relu(x)
-        x = F.max_pool2d(x, 2)
-        x = self.dropout1(x)
-        x = torch.flatten(x, 1)
-        x = self.fc1(x)
-        x = F.relu(x)
-        x = self.dropout2(x)
-        x = self.fc2(x)
-        output = F.log_softmax(x, dim=1)
-        return output
+        def forward(self, x):
+            x = self.conv1(x)
+            x = F.relu(x)
+            x = self.conv2(x)
+            x = F.relu(x)
+            x = F.max_pool2d(x, 2)
+            x = self.dropout1(x)
+            x = torch.flatten(x, 1)
+            x = self.fc1(x)
+            x = F.relu(x)
+            x = self.dropout2(x)
+            x = self.fc2(x)
+            output = F.log_softmax(x, dim=1)
+            return output
     ```
     * original model loss  
         ![image](img/fashion_mnist/original_model_loss.png)
@@ -150,3 +150,107 @@ You may need to change model architecture (model_architecture_XXXX.py) with diff
         ![image](img/fashion_mnist/MI-FGSM_attack_adversarial_model.png)
 
 
+## CIFAR10
+* original model architecture
+    ```
+    class Net(nn.Module):
+        # neural network model
+        def __init__(self):
+            super(Net, self).__init__()
+            self.PictureSize = 32
+            self.conv1 = nn.Conv2d(3, 64, 3, 1)
+            self.conv2 = nn.Conv2d(64, 128, 3, 1)
+            self.dropout1 = nn.Dropout(0.25)
+            self.dropout2 = nn.Dropout(0.5)
+            self.PictureSize -= 2*2 # two conv layer with kernel=3 stride = 1
+            self.PictureSize = int(self.PictureSize/2) # pool layer 2*2 
+            self.fc1 = nn.Linear(128*self.PictureSize*self.PictureSize , 256)
+            self.fc2 = nn.Linear(256, 10)
+
+        def forward(self, x):
+            x = self.conv1(x)
+            x = F.relu(x)
+            x = self.conv2(x)
+            x = F.relu(x)
+            x = F.max_pool2d(x, 2)
+            x = self.dropout1(x)
+            x = torch.flatten(x, 1)
+            x = self.fc1(x)
+            x = F.relu(x)
+            x = self.dropout2(x)
+            x = self.fc2(x)
+            output = F.log_softmax(x, dim=1)
+            return output
+    ```
+    * original model loss  
+        ![image](img/CIFAR10/original_model_loss.png)
+
+
+* defense (Distillation) model architecture
+    ```
+    class NetF(nn.Module):
+        def __init__(self):
+            # for FashionMNIST
+            super(NetF, self).__init__()
+            self.conv1 = nn.Conv2d(3, 64, 3, 1)
+            self.conv2 = nn.Conv2d(64, 128, 3, 1)
+            self.dropout1 = nn.Dropout(0.25)
+            self.dropout2 = nn.Dropout(0.5)
+            self.fc1 = nn.Linear(25088, 256)
+            self.fc2 = nn.Linear(256, 10)
+
+        def forward(self, x):
+            x = self.conv1(x)
+            x = F.relu(x)
+            x = self.conv2(x)
+            x = F.relu(x)
+            x = F.max_pool2d(x, 2)
+            x = self.dropout1(x)
+            x = torch.flatten(x, 1)
+            x = self.fc1(x)
+            x = F.relu(x)
+            x = self.dropout2(x)
+            x = self.fc2(x)
+            return x
+
+    class NetF1(nn.Module):
+        def __init__(self):
+            super(NetF1, self).__init__()
+            self.conv1 = nn.Conv2d(3, 32, 3, 1)
+            self.conv2 = nn.Conv2d(32, 64, 3, 1)
+            self.dropout1 = nn.Dropout(0.25)
+            self.dropout2 = nn.Dropout(0.5)
+            self.fc1 = nn.Linear(12544, 128)
+            self.fc2 = nn.Linear(128, 10)
+
+        def forward(self, x):
+            x = self.conv1(x)
+            x = F.relu(x)
+            x = self.conv2(x)
+            x = F.relu(x)
+            x = F.max_pool2d(x, 2)
+            x = self.dropout1(x)
+            x = torch.flatten(x, 1)
+            x = self.fc1(x)
+            x = F.relu(x)
+            x = self.dropout2(x)
+            x = self.fc2(x)
+            return x
+    ```
+    * defense modelF loss  
+        ![image](img/CIFAR10/defense_modelF_Loss.png)
+
+    * defense modelF1 (train with soft label) loss  
+        ![image](img/CIFAR10/defense_modelF1_Loss.png)
+
+* attack original model result
+    * accuracy each epsilon  
+        ![image](img/CIFAR10/MI-FGSM_attack_original_model_accuracy.png)
+    * result  
+        ![image](img/CIFAR10/MI-FGSM_attack_original_model.png)
+
+* attack defense (Distillation) model result
+    * accuracy each epsilon  
+        ![image](img/CIFAR10/MI-FGSM_attack_defense_model_accuracy.png)
+    * result  
+        ![image](img/CIFAR10/MI-FGSM_attack_adversarial_model.png)

@@ -10,11 +10,11 @@ import model_architecture_FashionMNIST
 import model_architecture_CIFAR10
 
 '''
-class Net(model_architecture_FashionMNIST.Net):
+class Net(model_architecture_CIFAR10.Net):
    # change model when use different dataset
    {}
 '''
-class Net(model_architecture_CIFAR10.Net):
+class Net(model_architecture_FashionMNIST.Net):
    # change model when use different dataset
    {}
 

@@ -114,6 +114,7 @@ def attack_distillation_model(model, device, test_loader, epsilon):
 
 
 def test_attack_original_model(model, device):
+    print("attack original model......")
     epsilons = [0,0.007,0.01,0.02,0.03,0.05,0.1,0.2,0.3]
     accuracies = []
     adversarial_examples = []
@@ -124,7 +125,7 @@ def test_attack_original_model(model, device):
         acc, ex = attack_original_model(model, device, test_loader, eps)
         accuracies.append(acc)
         adversarial_examples.append(ex)
-    
+    print()
     # draw accuracy under different epsilons
     plt.figure(figsize=(5,5))
     plt.plot(epsilons, accuracies, "*-")
@@ -154,6 +155,7 @@ def test_attack_original_model(model, device):
     plt.show()
 
 def test_attack_distillation_model(model, device):
+    print("attack distillation model......")
     epsilons = [0,0.007,0.01,0.02,0.03,0.05,0.1,0.2,0.3]
     accuracies = []
     adversarial_examples = []
@@ -163,7 +165,7 @@ def test_attack_distillation_model(model, device):
         acc, ex = attack_distillation_model(model, device, test_loader, eps)
         accuracies.append(acc)
         adversarial_examples.append(ex)
-
+    print()
     # 畫出不同epsilons下model的accuracy
     plt.figure(figsize=(5,5))
     plt.plot(epsilons, accuracies, "*-")
@@ -198,7 +200,7 @@ if __name__ == '__main__':
     device = get_device()
     model = Original_model.read_model(device)
     test_attack_original_model(model, device)
-    #modelF1 = Defense_model.read_model(device)
-    #test_attack_distillation_model(modelF1, device)
+    modelF1 = Defense_model.read_model(device)
+    test_attack_distillation_model(modelF1, device)
 
    

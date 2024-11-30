@@ -10,19 +10,19 @@ import model_architecture_FashionMNIST
 import model_architecture_CIFAR10
 
 '''
-class NetF1(model_architecture_FashionMNIST.NetF1):
-   # change model when use different dataset
-   {}
-
-class NetF(model_architecture_FashionMNIST.NetF1):
-   # change model when use different dataset
-   {}
-'''
 class NetF1(model_architecture_CIFAR10.NetF1):
    # change model when use different dataset
    {}
 
-class NetF(model_architecture_CIFAR10.NetF):
+class NetF(model_architecture_CIFAR10.NetF1):
+   # change model when use different dataset
+   {}
+'''
+class NetF1(model_architecture_FashionMNIST.NetF1):
+   # change model when use different dataset
+   {}
+
+class NetF(model_architecture_FashionMNIST.NetF):
    # change model when use different dataset
    {}
 
