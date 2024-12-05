@@ -8,6 +8,10 @@
 * Defensive Distillation  
     https://arxiv.org/abs/1511.04508
 
+# Python version
+```
+3.9.13
+```
 
 # Set up virtual environment
 ```
